@@ -53,17 +53,21 @@ public class FedoraMediaResourceManager implements MediaResourceManager {
             SwordServerException, SwordAuthException {
         FedoraClient fedora = getFedoraClient(auth);
         FedoraResourceIdentifier fri = new FedoraResourceIdentifier(uri);
+        String filename = deposit.getFilename();
+        // FIXME actually make sure the filename is a valid dsid 
+        // (e.g. XML NC Name, not greater than 64 chars)
+        String dsid = filename;
 
-        DepositReceipt receipt = new DepositReceipt();
+        DepositReceipt receipt =
+                FedoraContainerManager.getDepositReceipt(fri.pid, auth);
 
         ModifyDatastreamResponse response;
         try {
             response =
-                    modifyDatastream(fri.pid, fri.dsid).content(
-                            deposit.getFile()).execute(fedora);
+                    modifyDatastream(fri.pid, dsid).mimeType(
+                            deposit.getMimeType()).content(
+                            deposit.getInputStream()).execute(fedora);
 
-            //FIXME
-            receipt.setContent(null, response.getType());
             receipt.setLastModified(response.getLastModifiedDate());
         } catch (FedoraClientException e) {
             throw new SwordServerException(e.getMessage(), e);

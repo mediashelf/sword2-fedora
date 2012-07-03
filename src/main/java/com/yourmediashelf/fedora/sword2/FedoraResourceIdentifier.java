@@ -11,9 +11,9 @@ public class FedoraResourceIdentifier {
     private static Pattern pattern = Pattern
             .compile(".*/([A-Za-z0-9-\\.]+:.+)");
 
-    protected String pid;
+    public String pid;
 
-    protected String dsid;
+    public String dsid;
 
     public FedoraResourceIdentifier(String pid, String dsid) {
         this.pid = pid;
