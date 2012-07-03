@@ -7,9 +7,9 @@ It is currently supports a rudimentary subset of the SWORD spec:
 
 1. retrieval of service documents
 2. creating resources via 
-	a. binary deposit 
-	b. multipart/related
-	c. Atom entry
+	* binary deposit 
+	* multipart/related
+	* Atom entry
 3. generating deposit receipts
 
 Notably absent features:
@@ -28,6 +28,11 @@ Build
 To build this library use Maven 3:
 
     mvn clean package
+    
+sword2-fedora ships with a number of integration tests that require a  running instance of Fedora.
+Or, to skip the integration tests entirely:
+   
+    mvn clean package -DskipTests
     
     
 Installation
