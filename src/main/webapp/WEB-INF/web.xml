@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="sword2-fedora" xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+  version="2.5">
+
+  <display-name>SWORD 2.0 Fedora web.xml</display-name>
+
+  <!-- Configuration Information -->
+  <context-param>
+    <description>The ServiceDocumentManager server implementation class name</description>
+    <param-name>service-document-impl</param-name>
+    <param-value>com.yourmediashelf.fedora.sword2.FedoraServiceDocumentManager</param-value>
+  </context-param>
+
+  <!-- this can be omitted if the server does not wish to support listing collection 
+    contents -->
+  <context-param>
+    <description>The CollectionListManager server implementation class name</description>
+    <param-name>collection-list-impl</param-name>
+    <param-value>com.yourmediashelf.fedora.sword2.FedoraCollectionListManager</param-value>
+  </context-param>
+
+  <context-param>
+    <description>The CollectionDepositManager server implementation class name</description>
+    <param-name>collection-deposit-impl</param-name>
+    <param-value>com.yourmediashelf.fedora.sword2.FedoraCollectionDepositManager</param-value>
+  </context-param>
+
+  <context-param>
+    <description>
+            The MediaResourceManager server implementation class name
+        </description>
+    <param-name>media-resource-impl</param-name>
+    <param-value>com.yourmediashelf.fedora.sword2.FedoraMediaResourceManager</param-value>
+  </context-param>
+
+  <context-param>
+    <description>
+            The ContainerManager server implementation class name
+        </description>
+    <param-name>container-impl</param-name>
+    <param-value>com.yourmediashelf.fedora.sword2.FedoraContainerManager</param-value>
+
+  </context-param>
+
+  <context-param>
+    <description>
+            The StatementManager server implementation class name
+        </description>
+    <param-name>statement-impl</param-name>
+    <param-value>com.yourmediashelf.fedora.sword2.FedoraStatementManager</param-value>
+
+  </context-param>
+
+  <!-- This option here is an actual implementation of the configuration class, which 
+    contains some default values -->
+  <context-param>
+    <description>
+            The SwordConfiguration server implementation class name
+        </description>
+    <param-name>config-impl</param-name>
+    <param-value>org.swordapp.server.SwordConfigurationDefault</param-value>
+
+  </context-param>
+
+  <context-param>
+    <description>
+            The type of authentication used : [Basic|None]
+        </description>
+    <param-name>authentication-method</param-name>
+    <param-value>Basic</param-value>
+
+  </context-param>
+
+
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>servicedocument</servlet-name>
+    <servlet-class>org.swordapp.server.servlets.ServiceDocumentServletDefault</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>collection</servlet-name>
+    <servlet-class>org.swordapp.server.servlets.CollectionServletDefault</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>mediaresource</servlet-name>
+    <servlet-class>org.swordapp.server.servlets.MediaResourceServletDefault</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>container</servlet-name>
+    <servlet-class>org.swordapp.server.servlets.ContainerServletDefault</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>statement</servlet-name>
+    <servlet-class>org.swordapp.server.servlets.StatementServletDefault</servlet-class>
+  </servlet>
+
+  <!-- Servlet Mappings -->
+
+  <servlet-mapping>
+    <servlet-name>servicedocument</servlet-name>
+    <url-pattern>/servicedocument/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>collection</servlet-name>
+    <url-pattern>/collection/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>mediaresource</servlet-name>
+    <url-pattern>/edit-media/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>container</servlet-name>
+    <url-pattern>/edit/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>statement</servlet-name>
+    <url-pattern>/statement/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>
