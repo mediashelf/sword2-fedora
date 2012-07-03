@@ -8,7 +8,6 @@ import static com.yourmediashelf.fedora.client.FedoraClient.modifyDatastream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.abdera.i18n.iri.IRI;
 import org.swordapp.server.AuthCredentials;
 import org.swordapp.server.CollectionDepositManager;
 import org.swordapp.server.Deposit;
@@ -26,18 +25,19 @@ public class FedoraCollectionDepositManager implements CollectionDepositManager 
     public DepositReceipt createNew(String collectionURI, Deposit deposit,
             AuthCredentials auth, SwordConfiguration config) throws SwordError,
             SwordServerException, SwordAuthException {
-        DepositReceipt receipt = new DepositReceipt();
         FedoraClient fedora = FedoraMediaResourceManager.getFedoraClient(auth);
+
+        String packaging = getPackaging(deposit);
 
         String pid;
         try {
-            pid = ingest().execute(fedora).getPid();
-            IRI editIri = new IRI(FedoraConfiguration.editBaseUrl + pid);
-            IRI editMediaIri =
-                    new IRI(FedoraConfiguration.editMediaBaseUrl + pid);
-            receipt.setLocation(editIri);
-            receipt.setEditIRI(editIri);
-            receipt.setEditMediaIRI(editMediaIri);
+            if (packaging != null && !packaging.isEmpty()) {
+                pid =
+                        ingest().content(deposit.getInputStream()).format(
+                                packaging).execute(fedora).getPid();
+            } else {
+                pid = ingest().execute(fedora).getPid();
+            }
         } catch (FedoraClientException e) {
             throw new SwordServerException(e.getMessage(), e);
         }
@@ -49,7 +49,6 @@ public class FedoraCollectionDepositManager implements CollectionDepositManager 
             String dsid = filename;
 
             try {
-                pid = ingest().execute(fedora).getPid();
                 addDatastream(pid, dsid).content(deposit.getInputStream())
                         .mimeType(deposit.getMimeType()).dsLabel(
                                 deposit.getFilename()).execute(fedora);
@@ -57,6 +56,9 @@ public class FedoraCollectionDepositManager implements CollectionDepositManager 
                 throw new SwordServerException(e.getMessage(), e);
             }
         }
+
+        DepositReceipt receipt =
+                FedoraContainerManager.getDepositReceipt(pid, auth);
 
         if (deposit.isEntryOnly() || deposit.isMultipart()) {
             Map<String, List<String>> dc =
@@ -71,5 +73,15 @@ public class FedoraCollectionDepositManager implements CollectionDepositManager 
             }
         }
         return receipt;
+    }
+
+    private String getPackaging(Deposit deposit) {
+        String candidate = deposit.getPackaging();
+        for (String s : FedoraConfiguration.acceptPackaging) {
+            if (s.equalsIgnoreCase(candidate)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 }

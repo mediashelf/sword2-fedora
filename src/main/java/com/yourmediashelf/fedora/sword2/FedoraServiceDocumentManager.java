@@ -29,12 +29,15 @@ public class FedoraServiceDocumentManager implements ServiceDocumentManager {
 
     private SwordCollection getDefaultCollection() {
         SwordCollection dc = new SwordCollection();
-        dc.setHref(getCollectionHref("default"));
-        dc.setTitle("Default Fedora Collection");
+        dc.setHref(getCollectionHref(FedoraConfiguration.rootCollection));
+        dc.setTitle("Root Fedora Collection");
         String accepts = "*/*";
         dc.setAccept(accepts);
         dc.setMultipartAccept(accepts);
         dc.setAbstract("The default collection of all Fedora objects");
+        for (String packaging : FedoraConfiguration.acceptPackaging) {
+            dc.addAcceptPackaging(packaging);
+        }
         return dc;
     }
 

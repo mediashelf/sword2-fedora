@@ -12,25 +12,13 @@ import org.swordapp.server.SwordConfiguration;
 import org.swordapp.server.SwordError;
 import org.swordapp.server.SwordServerException;
 
-
 public class FedoraContainerManager implements ContainerManager {
 
     public DepositReceipt getEntry(String editIRI, Map<String, String> accept,
             AuthCredentials auth, SwordConfiguration config)
             throws SwordServerException, SwordError, SwordAuthException {
         FedoraResourceIdentifier fri = new FedoraResourceIdentifier(editIRI);
-
-        DepositReceipt receipt = new DepositReceipt();
-        IRI editIri = new IRI(editIRI);
-        receipt.setLocation(editIri);
-        receipt.setEditIRI(editIri);
-
-        IRI editMediaIri =
-                new IRI(FedoraConfiguration.editMediaBaseUrl + fri.pid + "/" +
-                        fri.dsid);
-        receipt.setEditMediaIRI(editMediaIri);
-
-        return receipt;
+        return getDepositReceipt(fri.pid, auth);
     }
 
     public DepositReceipt replaceMetadata(String editIRI, Deposit deposit,
@@ -90,4 +78,31 @@ public class FedoraContainerManager implements ContainerManager {
         return false;
     }
 
+    protected static DepositReceipt
+            getDepositReceipt(String pid, AuthCredentials auth)
+                    throws SwordServerException {
+        IRI editIri = new IRI(FedoraConfiguration.editBaseUrl + pid);
+        IRI editMediaIri = new IRI(FedoraConfiguration.editMediaBaseUrl + pid);
+
+        DepositReceipt receipt = new DepositReceipt();
+        receipt.setLocation(editIri);
+        receipt.setEditIRI(editIri);
+        receipt.setEditMediaIRI(editMediaIri);
+
+        // parse DC datastream to fill out receipt metadata
+        // FedoraClient fedora = FedoraMediaResourceManager.getFedoraClient(auth);
+        //        try {
+        //            AddDatastreamResponse response =
+        //                    addDatastream(pid, "DC").execute(fedora);
+        //
+        //        } catch (FedoraClientException e) {
+        //            throw new SwordServerException(e.getMessage(), e);
+        //        }
+
+        for (String packaging : FedoraConfiguration.acceptPackaging) {
+            receipt.addPackaging(packaging);
+        }
+
+        return receipt;
+    }
 }

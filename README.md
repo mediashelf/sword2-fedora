@@ -11,6 +11,7 @@ It is currently supports a rudimentary subset of the SWORD spec:
 	* multipart/related
 	* Atom entry
 3. generating deposit receipts
+4. packaging support for retrieval
 
 Notably absent features:
 	
@@ -19,7 +20,7 @@ Notably absent features:
 * Adding content to a resource
 * in-progress deposit
 * on-behalf-of deposit
-* Content-negotiation, packaging
+* Content-negotiation
 	
 
 Build

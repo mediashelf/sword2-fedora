@@ -1,7 +1,7 @@
 
 package com.yourmediashelf.fedora.sword2;
 
-import static com.yourmediashelf.fedora.client.FedoraClient.getObjectXML;
+import static com.yourmediashelf.fedora.client.FedoraClient.export;
 import static com.yourmediashelf.fedora.client.FedoraClient.modifyDatastream;
 import static com.yourmediashelf.fedora.client.FedoraClient.purgeDatastream;
 
@@ -31,21 +31,15 @@ public class FedoraMediaResourceManager implements MediaResourceManager {
             Map<String, String> accept, AuthCredentials auth,
             SwordConfiguration config) throws SwordError, SwordServerException,
             SwordAuthException {
+        String packaging = getPackaging(accept);
+        
         FedoraClient fedora = getFedoraClient(auth);
         FedoraResourceIdentifier fri = new FedoraResourceIdentifier(uri);
-
-        //        FedoraResponse response;
-        //        try {
-        //            response =
-        //                    getDatastreamDissemination(fri.pid, fri.dsid)
-        //                            .execute(fedora);
-        //        } catch (FedoraClientException e) {
-        //            throw new SwordServerException(e.getMessage(), e);
-        //        }
-
         FedoraResponse response;
         try {
-            response = getObjectXML(fri.pid).execute(fedora);
+            response =
+                    export(fri.pid).format(packaging).context("archive")
+                    .execute(fedora);
         } catch (FedoraClientException e) {
             throw new SwordServerException(e.getMessage(), e);
         }
@@ -110,5 +104,22 @@ public class FedoraMediaResourceManager implements MediaResourceManager {
             throw new SwordServerException(e.getMessage(), e);
         }
         return new FedoraClient(credentials);
+    }
+
+    private String getPackaging(Map<String, String> accepts) throws SwordError {
+        for (String header : accepts.keySet()) {
+            if (header.equalsIgnoreCase("Accept-Packaging")) {
+                String candidate = accepts.get(header);
+                for (String packaging : FedoraConfiguration.acceptPackaging) {
+                    if (packaging.equalsIgnoreCase(candidate)) {
+                        return candidate;
+                    }
+                }
+                throw new SwordError(
+                        "http://purl.net/org/sword/terms/ErrorContent", 406);
+            }
+        }
+        // default?
+        return "info:fedora/fedora-system:FOXML-1.1";
     }
 }

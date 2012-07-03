@@ -18,12 +18,12 @@ import javax.xml.namespace.QName;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.xml.XmlPath;
 import com.jayway.restassured.response.Response;
+import com.yourmediashelf.fedora.sword2.FedoraConfiguration;
 
 public class CreateResourceIT extends SwordIT {
 
@@ -39,12 +39,12 @@ public class CreateResourceIT extends SwordIT {
      * </ul>
      */
     @Test
-    @Ignore
     public void testCreateBinaryResource() throws Exception {
         Response response =
                 given().header("Content-Disposition",
                         "attachment; filename=foo.txt").body("<foo>bar</foo>")
-                        .post("/collection/default");
+                        .post("/collection/" +
+                                FedoraConfiguration.rootCollection);
         assertEquals(201, response.statusCode());
         assertTrue(response.getHeader("Location").startsWith(
                 RestAssured.baseURI + "edit/"));
@@ -88,7 +88,8 @@ public class CreateResourceIT extends SwordIT {
 
         Response response =
                 given().header("Content-Type", mp.getContentType()).body(
-                        mpString).post("/collection/default");
+                        mpString).post(
+                        "/collection/" + FedoraConfiguration.rootCollection);
         assertEquals(201, response.statusCode());
 
         XmlPath receipt = new XmlPath(response.prettyPrint()).setRoot("entry");
@@ -108,7 +109,7 @@ public class CreateResourceIT extends SwordIT {
 
         given().header("Content-Type", "application/atom+xml;type=entry").body(
                 entry.toString()).expect().statusCode(201).log().all().when()
-                .post("/collection/default");
+                .post("/collection/" + FedoraConfiguration.rootCollection);
     }
 
     private void verifyBinaryReceipt(XmlPath receipt) throws Exception {

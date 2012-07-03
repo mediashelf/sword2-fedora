@@ -3,7 +3,9 @@ package com.yourmediashelf.fedora.sword2;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 public class FedoraConfiguration {
 
@@ -25,6 +27,10 @@ public class FedoraConfiguration {
 
     public static String statementBaseUrl;
 
+    public static String rootCollection = "root";
+
+    public static Set<String> acceptPackaging;
+
     static {
         Properties defaults = new Properties();
         defaults.put("fedora.baseUrl", "http://localhost/fedora/");
@@ -37,27 +43,34 @@ public class FedoraConfiguration {
                 Thread.currentThread().getContextClassLoader()
                         .getResourceAsStream("/sword2fedora.properties");
         try {
-            try {
-                props.load(stream);
+            if (stream != null) {
+                try {
+                    props.load(stream);
 
-                fedoraBaseUrl = props.getProperty("fedora.baseUrl");
+                    fedoraBaseUrl = props.getProperty("fedora.baseUrl");
 
-                swordBaseUrl = props.getProperty("sword2.baseUrl");
+                    swordBaseUrl = props.getProperty("sword2.baseUrl");
 
-                editBaseUrl =
-                        swordBaseUrl + props.getProperty("sword2.editPath");
+                    editBaseUrl =
+                            swordBaseUrl + props.getProperty("sword2.editPath");
 
-                editMediaBaseUrl =
-                        swordBaseUrl +
-                                props.getProperty("sword2.editMediaPath");
+                    editMediaBaseUrl =
+                            swordBaseUrl +
+                                    props.getProperty("sword2.editMediaPath");
 
-            } finally {
-                stream.close();
+                } finally {
+                    stream.close();
+                }
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
+        acceptPackaging = new HashSet<String>();
+        acceptPackaging.add("info:fedora/fedora-system:FOXML-1.1");
+        acceptPackaging.add("info:fedora/fedora-system:METSFedoraExt-1.1");
+        acceptPackaging.add("info:fedora/fedora-system:ATOM-1.1");
+        acceptPackaging.add("info:fedora/fedora-system:ATOMZip-1.1");
     }
 }
